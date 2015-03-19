@@ -36,6 +36,9 @@ type
 
 var
   Players: TList;
+  ProgramFiles32Dir: string;
+  ProgramFiles64Dir: string;
+  strCSIDL_LOCAL_APPDATA: string;
 
 implementation
 
@@ -61,6 +64,10 @@ begin
     dir1:=strings[1];
     dir2:=strings[2];
     ExeName:=strings[3];
+    if dir1='ProgramFiles32Dir' then dir1:=ProgramFiles32Dir
+    else if dir1='ProgramFiles64Dir' then dir1:=ProgramFiles64Dir
+    else if dir1='CSIDL_LOCAL_APPDATA' then dir1:=strCSIDL_LOCAL_APPDATA;
+    Path:=dir1+dir2+ExeName;
   end;
 end;
 

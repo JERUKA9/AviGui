@@ -27,9 +27,6 @@ type
     IniPath: string;
     FFmpegDir: string;
     IniCanBeWritten: boolean;
-    ProgramFiles32Dir: string;
-    ProgramFiles64Dir: string;
-    strCSIDL_LOCAL_APPDATA: string;
     procedure ReadIniSettings;
     procedure WriteIniSettings;
     procedure FillPlayersFromDat;
@@ -97,7 +94,7 @@ begin
   ProgramFiles:=ExcludeTrailingBackslash(getWinSpecialFolder(CSIDL_PROGRAM_FILES));
   posBSL:=LastDelimiter('\', ProgramFiles);
   if posBSL<1 then raise Exception.Create('Bad CSIDL_PROGRAM_FILES');
-  ProgramFiles32Dir:=ProgramFiles;
+  ProgramFiles32Dir:=ProgramFiles+'\';
   pos86:=LastPos('(x86)', ProgramFiles);
   if pos86>posBSL then
   begin
