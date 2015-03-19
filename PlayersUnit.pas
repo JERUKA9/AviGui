@@ -4,15 +4,19 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons;
 
 type
   TPlayersForm = class(TForm)
     ListView1: TListView;
     Button1: TButton;
     Button2: TButton;
+    SpeedButton1: TSpeedButton;
+    SpeedButton2: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
   private
     procedure SetInComboFlag;
   public
@@ -80,11 +84,16 @@ procedure TPlayersForm.FormCreate(Sender: TObject);
 var
   i: integer;
   pi: TPlayerInfo;
+  item: TListItem;
 begin
   for i:=0 to Players.Count-1 do
   begin
     pi:=Players[i];
-    ListView1.AddItem(pi.Name, pi);
+    item:=ListView1.Items.Add;
+    item.Caption:=pi.Name;
+    item.Data:=pi;
+    item.SubItems.Add('std');
+    item.SubItems.Add(pi.Path);
   end;
 end;
 
@@ -115,5 +124,30 @@ begin
     pi.InCombo:=item.Checked;
   end;
 end;
+
+procedure TPlayersForm.SpeedButton1Click(Sender: TObject);v
+var
+  i: integer;
+  item: TListItem;
+begin
+  for i:=0 to ListView1.Items.Count-1 do
+  begin
+    item:=ListView1.Items[i];
+    item.Checked:=true;
+  end;
+end;
+
+procedure TPlayersForm.SpeedButton2Click(Sender: TObject);
+var
+  i: integer;
+  item: TListItem;
+begin
+  for i:=0 to ListView1.Items.Count-1 do
+  begin
+    item:=ListView1.Items[i];
+    item.Checked:=false;
+  end;
+end;
+
 
 end.
