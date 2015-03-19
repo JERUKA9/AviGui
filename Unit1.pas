@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Buttons, IniFiles, ShlObj;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.Buttons, IniFiles, ShlObj, StrUtils;
 
 type
   TForm1 = class(TForm)
@@ -27,11 +27,15 @@ type
     IniPath: string;
     FFmpegDir: string;
     IniCanBeWritten: boolean;
+    ProgramFiles32Dir: string;
+    ProgramFiles64Dir: string;
+    strCSIDL_LOCAL_APPDATA: string;
     procedure ReadIniSettings;
     procedure WriteIniSettings;
     procedure FillPlayersFromDat;
     procedure FillPlayersCombo;
     function ForceFFmpeg: boolean;
+    procedure SetDirConsts;
   public
     { Public declarations }
   end;
@@ -73,6 +77,38 @@ begin
   if (Result <> '') then Result := IncludeTrailingBackslash(Result);
 end;
 
+function LastPos(const Part, Whole: string): integer;
+var
+  Reverse: string;
+  RevPart: string;
+begin
+  Reverse:= ReverseString(Whole);
+  RevPart:= ReverseString(Part);
+  Result:= (Length(Whole) + 1) - Pos(RevPart, Reverse) - Length(RevPart)+1;
+  if (Result > Length(Whole)) then Result:= 0;
+end;
+
+procedure TForm1.SetDirConsts;
+var
+  ProgramFiles: string;
+  pos86,posBSL: integer;
+begin
+  strCSIDL_LOCAL_APPDATA:=getWinSpecialFolder(CSIDL_LOCAL_APPDATA);
+  ProgramFiles:=ExcludeTrailingBackslash(getWinSpecialFolder(CSIDL_PROGRAM_FILES));
+  posBSL:=LastDelimiter('\', ProgramFiles);
+  if posBSL<1 then raise Exception.Create('Bad CSIDL_PROGRAM_FILES');
+  ProgramFiles32Dir:=ProgramFiles;
+  pos86:=LastPos('(x86)', ProgramFiles);
+  if pos86>posBSL then
+  begin
+    dec(pos86);
+    while (pos86>0)and(ProgramFiles[pos86]=' ') do dec(pos86);
+    SetLength(ProgramFiles, pos86);
+    ProgramFiles64Dir:=ProgramFiles+'\';;
+  end else
+    ProgramFiles64Dir:=ProgramFiles;
+end;
+
 procedure TForm1.FillPlayersFromDat;
 var
   i:integer;
@@ -80,12 +116,12 @@ var
   Line: string;
   pi: TPlayerInfo;
   strings: TStringList;
-  var Wow64Process: BOOL;
 begin
 {$IFDEF WIN64}
   ShowMessage('Must be compiled as 32-bit to detect CSIDL_PROGRAM_FILES');
   RunError(1);
 {$ENDIF}
+  SetDirConsts;
   AssignFile(f,AppDir()+'Players.dat');
   Reset(f);
   strings:=TStringList.Create;
