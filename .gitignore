@@ -1,0 +1,9 @@
+*.dcu
+*.~*
+*.local
+*.otares
+*.identcache
+*.dproj
+AviGui.res
+*.exe
+*.rsm
