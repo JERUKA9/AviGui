@@ -398,7 +398,7 @@ begin
     for i:=0 to Players.Count-1 do
     begin
       pi:=TPlayerInfo(Players[i]);
-      if pi.Modified and not pi.InCombo then
+      if not pi.InCombo and pi.IsModified() then
         iniFile.WriteString('Players', IntToStr(ComboBox1.Items.Count+i), '0;'+pi.Name+';'+pi.Path);
     end;
   finally

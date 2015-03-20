@@ -28,12 +28,14 @@ var
 
 type
   TPlayerInfo = class
+  private
+    OrigPath: string;
   public
     Name: string;
     ExeName: string;
     Path: string;
     InCombo: boolean;
-    Modified: boolean;
+    function IsModified: boolean;
     constructor Create; overload;
     constructor Create(strings: TStrings); overload;
   end;
@@ -73,6 +75,12 @@ begin
     else if dir1='CSIDL_LOCAL_APPDATA' then dir1:=strCSIDL_LOCAL_APPDATA;
     Path:=dir1+dir2+ExeName;
   end;
+  OrigPath := Path;
+end;
+
+function TPlayerInfo.IsModified: boolean;
+begin
+  result:=not SameFileName(Path, OrigPath);
 end;
 
 procedure TPlayersForm.Button1Click(Sender: TObject);
@@ -92,7 +100,10 @@ begin
     item:=ListView1.Items.Add;
     item.Caption:=pi.Name;
     item.Data:=pi;
-    item.SubItems.Add('std');
+    if pi.IsModified() then
+      item.SubItems.Add('sm')
+    else
+      item.SubItems.Add('s');
     item.SubItems.Add(pi.Path);
   end;
 end;
@@ -125,7 +136,7 @@ begin
   end;
 end;
 
-procedure TPlayersForm.SpeedButton1Click(Sender: TObject);v
+procedure TPlayersForm.SpeedButton1Click(Sender: TObject);
 var
   i: integer;
   item: TListItem;

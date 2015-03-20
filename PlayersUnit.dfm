@@ -46,7 +46,7 @@ object PlayersForm: TPlayersForm
         Width = 150
       end
       item
-        Caption = 'Kind'
+        Caption = 'Attr'
         Width = 40
       end
       item
