@@ -7,7 +7,28 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons;
 
+var
+  Players: TList;
+  ProgramFiles32Dir: string;
+  ProgramFiles64Dir: string;
+  strCSIDL_LOCAL_APPDATA: string;
+
 type
+  TPlayerInfo = class
+  private
+    OrigPath: string;
+  public
+    Name: string;
+    ExeName: string;
+    Path: string;
+    InCombo: boolean;
+    New: boolean;
+    Correct: boolean;
+    function IsModified: boolean;
+    constructor Create; overload;
+    constructor Create(strings: TStrings); overload;
+  end;
+
   TPlayersForm = class(TForm)
     ListView1: TListView;
     Button1: TButton;
@@ -36,34 +57,13 @@ type
   private
     procedure SetInComboFlag;
     procedure UpdateAttrAndItem;
+    procedure FillItem(item:TListItem; pi: TPlayerInfo; bModif: boolean);
   public
     procedure SetCheckboxes;
   end;
 
 var
   PlayersForm: TPlayersForm;
-
-type
-  TPlayerInfo = class
-  private
-    OrigPath: string;
-  public
-    Name: string;
-    ExeName: string;
-    Path: string;
-    InCombo: boolean;
-    New: boolean;
-    Correct: boolean;
-    function IsModified: boolean;
-    constructor Create; overload;
-    constructor Create(strings: TStrings); overload;
-  end;
-
-var
-  Players: TList;
-  ProgramFiles32Dir: string;
-  ProgramFiles64Dir: string;
-  strCSIDL_LOCAL_APPDATA: string;
 
 implementation
 uses
@@ -104,8 +104,24 @@ begin
 end;
 
 procedure TPlayersForm.btnAddClick(Sender: TObject);
+var
+  pi: TPlayerInfo;
+  Item: TListItem;
 begin
-  AddForm.ShowModal;
+  if AddForm.ShowModal=mrOK then
+  begin
+    pi:=TPlayerInfo.Create;
+    pi.Name:=AddForm.edName.Text;
+    pi.ExeName:=ExtractFileName(pi.Name);
+    pi.Path:=AddForm.edPath.Text;
+    pi.InCombo:=true;
+    pi.New:=true;
+    pi.Correct:=FileExists(pi.Path);
+    Players.Add(pi);
+    Item:=ListView1.Items.Add;
+    FillItem(Item, pi, false);
+    Item.Checked:=true;
+  end;
 end;
 
 procedure TPlayersForm.Button1Click(Sender: TObject);
@@ -118,32 +134,46 @@ begin
   UpdateAttrAndItem;
 end;
 
+procedure TPlayersForm.FillItem(item: TListItem; pi: TPlayerInfo;
+  bModif: boolean);
+var
+  sAttr: string;
+begin
+  item.Caption:=pi.Name;
+  item.Data:=pi;
+  if pi.New then
+    sAttr:='n'
+  else
+    sAttr:='s';
+  if pi.Correct then
+    sAttr:=sAttr+'c'
+  else
+    sAttr:=sAttr+'b';
+  if pi.IsModified() then
+    sAttr:=sAttr+'m';
+  if bModif then
+  begin
+    item.SubItems[0]:=sAttr;
+    item.SubItems[1]:=pi.Path;
+  end else
+  begin
+    item.SubItems.Add(sAttr);
+    item.SubItems.Add(pi.Path);
+  end;
+end;
+
 procedure TPlayersForm.FormCreate(Sender: TObject);
 var
   i: integer;
   pi: TPlayerInfo;
   item: TListItem;
-  sAttr: string;
 begin
   for i:=0 to Players.Count-1 do
   begin
     pi:=Players[i];
     pi.Correct:=FileExists(pi.Path);
     item:=ListView1.Items.Add;
-    item.Caption:=pi.Name;
-    item.Data:=pi;
-    if pi.New then
-      sAttr:='n'
-    else
-      sAttr:='s';
-    if pi.Correct then
-      sAttr:=sAttr+'c'
-    else
-      sAttr:=sAttr+'b';
-    if pi.IsModified() then
-      sAttr:=sAttr+'m';
-    item.SubItems.Add(sAttr);
-    item.SubItems.Add(pi.Path);
+    FillItem(item, pi, false);
   end;
 end;
 
@@ -277,18 +307,7 @@ begin
   pi.Path:=edPath.Text;
   pi.ExeName:=ExtractFileName(pi.Path);
   pi.Correct:=FileExists(pi.Path);
-  if pi.New then
-    sAttr:='n'
-  else
-    sAttr:='s';
-  if pi.Correct then
-    sAttr:=sAttr+'c'
-  else
-    sAttr:=sAttr+'b';
-  if pi.IsModified() then
-    sAttr:=sAttr+'m';
-  ListView1.Selected.SubItems[0]:=sAttr;
-  ListView1.Selected.SubItems[1]:=pi.Path;
+  FillItem(ListView1.Selected, pi, true);
   if pi.New then
     sAttr:='new'
   else
