@@ -76,6 +76,7 @@ object PlayersForm: TPlayersForm
     RowSelect = True
     TabOrder = 0
     ViewStyle = vsReport
+    OnAdvancedCustomDrawItem = ListView1AdvancedCustomDrawItem
     OnChange = ListView1Change
   end
   object Button1: TButton

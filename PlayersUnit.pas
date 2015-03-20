@@ -27,6 +27,9 @@ type
       Change: TItemChange);
     procedure SpeedButton3Click(Sender: TObject);
     procedure edPathExit(Sender: TObject);
+    procedure ListView1AdvancedCustomDrawItem(Sender: TCustomListView;
+      Item: TListItem; State: TCustomDrawState; Stage: TCustomDrawStage;
+      var DefaultDraw: Boolean);
   private
     procedure SetInComboFlag;
     procedure UpdateAttrAndItem;
@@ -145,6 +148,19 @@ begin
     item.SubItems.Add(sAttr);
     item.SubItems.Add(pi.Path);
   end;
+end;
+
+procedure TPlayersForm.ListView1AdvancedCustomDrawItem(Sender: TCustomListView;
+  Item: TListItem; State: TCustomDrawState; Stage: TCustomDrawStage;
+  var DefaultDraw: Boolean);
+var
+  pi: TPlayerInfo;
+begin
+  pi:=Item.Data;
+  if pi.Correct then
+     ListView1.Canvas.Font.Color:=TColor($008000)
+  else
+     ListView1.Canvas.Font.Color:=TColor($0000A0);
 end;
 
 procedure TPlayersForm.ListView1Change(Sender: TObject; Item: TListItem;
