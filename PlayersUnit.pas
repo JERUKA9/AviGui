@@ -1,3 +1,4 @@
+{$J+}//assignable constants
 unit PlayersUnit;
 
 interface
@@ -13,12 +14,22 @@ type
     Button2: TButton;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
+    lblAttr: TLabel;
+    edName: TEdit;
+    edPath: TEdit;
+    SpeedButton3: TSpeedButton;
+    OpenDialog: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure ListView1Change(Sender: TObject; Item: TListItem;
+      Change: TItemChange);
+    procedure SpeedButton3Click(Sender: TObject);
+    procedure edPathExit(Sender: TObject);
   private
     procedure SetInComboFlag;
+    procedure UpdateAttrAndItem;
   public
     procedure SetCheckboxes;
   end;
@@ -35,6 +46,8 @@ type
     ExeName: string;
     Path: string;
     InCombo: boolean;
+    New: boolean;
+    Correct: boolean;
     function IsModified: boolean;
     constructor Create; overload;
     constructor Create(strings: TStrings); overload;
@@ -46,11 +59,23 @@ var
   ProgramFiles64Dir: string;
   strCSIDL_LOCAL_APPDATA: string;
 
+function AppPath(): string;
+function AppDir(): string;
+
 implementation
 
 {$R *.dfm}
 
 { TPlayerInfo }
+function AppPath(): string;
+begin
+  result := GetModuleName(0);
+end;
+
+function AppDir(): string;
+begin
+  result := ExtractFilePath(GetModuleName(0));
+end;
 
 constructor TPlayerInfo.Create;
 begin
@@ -88,24 +113,65 @@ begin
   SetInComboFlag;
 end;
 
+procedure TPlayersForm.edPathExit(Sender: TObject);
+begin
+  UpdateAttrAndItem;
+end;
+
 procedure TPlayersForm.FormCreate(Sender: TObject);
 var
   i: integer;
   pi: TPlayerInfo;
   item: TListItem;
+  sAttr: string;
 begin
   for i:=0 to Players.Count-1 do
   begin
     pi:=Players[i];
+    pi.Correct:=FileExists(pi.Path);
     item:=ListView1.Items.Add;
     item.Caption:=pi.Name;
     item.Data:=pi;
-    if pi.IsModified() then
-      item.SubItems.Add('sm')
+    if pi.New then
+      sAttr:='n'
     else
-      item.SubItems.Add('s');
+      sAttr:='s';
+    if pi.Correct then
+      sAttr:=sAttr+'c'
+    else
+      sAttr:=sAttr+'b';
+    if pi.IsModified() then
+      sAttr:=sAttr+'m';
+    item.SubItems.Add(sAttr);
     item.SubItems.Add(pi.Path);
   end;
+end;
+
+procedure TPlayersForm.ListView1Change(Sender: TObject; Item: TListItem;
+  Change: TItemChange);
+const prevIndex: integer=-1;
+var
+  pi: TPlayerInfo;
+  sAttr: string;
+begin
+  if not Item.Selected then exit;
+  if Item.Index=prevIndex then exit;
+  prevIndex:=Item.Index;
+  pi:=Item.Data;
+  if pi.New then
+    sAttr:='new'
+  else
+    sAttr:='standard';
+  if pi.Correct then
+    sAttr:=sAttr+' correct'
+  else
+    sAttr:=sAttr+' bad';
+  if pi.IsModified() then
+    sAttr:=sAttr+' modified';
+  lblAttr.Caption:=sAttr;
+  edName.Text := pi.Name;
+  edName.ReadOnly := not pi.New;
+  edPath.Text := pi.Path;
 end;
 
 procedure TPlayersForm.SetCheckboxes;
@@ -160,5 +226,67 @@ begin
   end;
 end;
 
+procedure TPlayersForm.SpeedButton3Click(Sender: TObject);
+var
+  pi: TPlayerInfo;
+begin
+  if edPath.Text<>'' then
+  begin
+    OpenDialog.InitialDir:=ExtractFileDir(edPath.Text);
+    OpenDialog.FileName:=ExtractFileName(edPath.Text);
+  end else
+  begin
+    OpenDialog.InitialDir:=AppDir;
+    if ListView1.Selected<>nil then
+    begin
+      pi:=ListView1.Selected.Data;
+      OpenDialog.FileName:=pi.ExeName;
+    end else OpenDialog.FileName:='';
+  end;
+  if OpenDialog.Execute() then
+  begin
+    edPath.Text:=OpenDialog.FileName;
+    UpdateAttrAndItem;
+  end;
+end;
+
+procedure TPlayersForm.UpdateAttrAndItem;
+var
+  pi: TPlayerInfo;
+  sAttr: string;
+begin
+  if ListView1.Selected=nil then
+  begin
+    ShowMessage('Not selected any item!');
+    exit;
+  end;
+  pi:=ListView1.Selected.Data;
+  pi.Path:=edPath.Text;
+  pi.ExeName:=ExtractFileName(pi.Path);
+  pi.Correct:=FileExists(pi.Path);
+  if pi.New then
+    sAttr:='n'
+  else
+    sAttr:='s';
+  if pi.Correct then
+    sAttr:=sAttr+'c'
+  else
+    sAttr:=sAttr+'b';
+  if pi.IsModified() then
+    sAttr:=sAttr+'m';
+  ListView1.Selected.SubItems[0]:=sAttr;
+  ListView1.Selected.SubItems[1]:=pi.Path;
+  if pi.New then
+    sAttr:='new'
+  else
+    sAttr:='standard';
+  if pi.Correct then
+    sAttr:=sAttr+' correct'
+  else
+    sAttr:=sAttr+' bad';
+  if pi.IsModified() then
+    sAttr:=sAttr+' modified';
+  lblAttr.Caption:=sAttr;
+end;
 
 end.

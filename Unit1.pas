@@ -45,17 +45,6 @@ uses
   PlayersUnit;
 
 {$R *.dfm}
-
-function AppPath(): string;
-begin
-  result := GetModuleName(0);
-end;
-
-function AppDir(): string;
-begin
-  result := ExtractFilePath(GetModuleName(0));
-end;
-
 procedure TForm1.Button1Click(Sender: TObject);
 begin
   if OpenVideoDialog.Execute then
