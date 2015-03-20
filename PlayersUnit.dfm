@@ -133,6 +133,7 @@ object PlayersForm: TPlayersForm
     Height = 25
     Caption = 'Remove'
     TabOrder = 6
+    OnClick = btnRemoveClick
   end
   object OpenDialog: TOpenDialog
     Left = 568

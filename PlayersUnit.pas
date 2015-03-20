@@ -54,6 +54,7 @@ type
       Item: TListItem; State: TCustomDrawState; Stage: TCustomDrawStage;
       var DefaultDraw: Boolean);
     procedure btnAddClick(Sender: TObject);
+    procedure btnRemoveClick(Sender: TObject);
   private
     procedure SetInComboFlag;
     procedure UpdateAttrAndItem;
@@ -118,10 +119,30 @@ begin
     pi.New:=true;
     pi.Correct:=FileExists(pi.Path);
     Players.Add(pi);
-    Item:=ListView1.Items.Add;
+    Item:=ListView1.Items.Insert(1);
     FillItem(Item, pi, false);
     Item.Checked:=true;
   end;
+end;
+
+procedure TPlayersForm.btnRemoveClick(Sender: TObject);
+var
+  pi: TPlayerInfo;
+begin
+  if ListView1.Selected=nil then
+  begin
+    ShowMessage('Select item!');
+    exit;
+  end;
+  pi:=ListView1.Selected.Data;
+  if not pi.New then
+  begin
+    ShowMessage('Can remove only newly added items!');
+    exit;
+  end;
+  ListView1.Items.Delete(ListView1.Selected.Index);
+  Players.Remove(pi);
+  pi.Free;
 end;
 
 procedure TPlayersForm.Button1Click(Sender: TObject);
