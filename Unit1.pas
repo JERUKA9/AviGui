@@ -399,8 +399,8 @@ end;
 procedure TForm1.SpeedButton1Click(Sender: TObject);
 begin
   PlayersForm.SetCheckboxes;
-  if PlayersForm.ShowModal = mrOK then
-    FillPlayersCombo;
+  PlayersForm.ShowModal();
+  FillPlayersCombo;
 end;
 
 

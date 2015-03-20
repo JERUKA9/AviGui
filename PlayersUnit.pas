@@ -32,7 +32,6 @@ type
   TPlayersForm = class(TForm)
     ListView1: TListView;
     Button1: TButton;
-    Button2: TButton;
     SpeedButton1: TSpeedButton;
     SpeedButton2: TSpeedButton;
     lblAttr: TLabel;

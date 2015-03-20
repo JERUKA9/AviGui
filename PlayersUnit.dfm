@@ -80,7 +80,7 @@ object PlayersForm: TPlayersForm
     OnChange = ListView1Change
   end
   object Button1: TButton
-    Left = 447
+    Left = 532
     Top = 420
     Width = 75
     Height = 25
@@ -89,32 +89,20 @@ object PlayersForm: TPlayersForm
     ModalResult = 1
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 328
-  end
-  object Button2: TButton
-    Left = 532
-    Top = 420
-    Width = 75
-    Height = 25
-    Anchors = [akRight, akBottom]
-    Caption = 'Cancel'
-    ModalResult = 2
-    TabOrder = 2
-    ExplicitTop = 328
   end
   object edName: TEdit
     Left = 8
     Top = 355
     Width = 153
     Height = 21
-    TabOrder = 3
+    TabOrder = 2
   end
   object edPath: TEdit
     Left = 167
     Top = 355
     Width = 394
     Height = 21
-    TabOrder = 4
+    TabOrder = 3
     OnExit = edPathExit
   end
   object btnAdd: TButton
@@ -123,7 +111,7 @@ object PlayersForm: TPlayersForm
     Width = 75
     Height = 25
     Caption = 'Add'
-    TabOrder = 5
+    TabOrder = 4
     OnClick = btnAddClick
   end
   object btnRemove: TButton
@@ -132,7 +120,7 @@ object PlayersForm: TPlayersForm
     Width = 75
     Height = 25
     Caption = 'Remove'
-    TabOrder = 6
+    TabOrder = 5
     OnClick = btnRemoveClick
   end
   object OpenDialog: TOpenDialog
