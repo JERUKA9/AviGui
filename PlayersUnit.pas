@@ -19,6 +19,8 @@ type
     edPath: TEdit;
     SpeedButton3: TSpeedButton;
     OpenDialog: TOpenDialog;
+    btnAdd: TButton;
+    btnRemove: TButton;
     procedure FormCreate(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure SpeedButton1Click(Sender: TObject);
@@ -30,6 +32,7 @@ type
     procedure ListView1AdvancedCustomDrawItem(Sender: TCustomListView;
       Item: TListItem; State: TCustomDrawState; Stage: TCustomDrawStage;
       var DefaultDraw: Boolean);
+    procedure btnAddClick(Sender: TObject);
   private
     procedure SetInComboFlag;
     procedure UpdateAttrAndItem;
@@ -62,24 +65,13 @@ var
   ProgramFiles64Dir: string;
   strCSIDL_LOCAL_APPDATA: string;
 
-function AppPath(): string;
-function AppDir(): string;
-
 implementation
+uses
+  Common, AddUnit;
 
 {$R *.dfm}
 
 { TPlayerInfo }
-function AppPath(): string;
-begin
-  result := GetModuleName(0);
-end;
-
-function AppDir(): string;
-begin
-  result := ExtractFilePath(GetModuleName(0));
-end;
-
 constructor TPlayerInfo.Create;
 begin
 end;
@@ -109,6 +101,11 @@ end;
 function TPlayerInfo.IsModified: boolean;
 begin
   result:=not SameFileName(Path, OrigPath);
+end;
+
+procedure TPlayersForm.btnAddClick(Sender: TObject);
+begin
+  AddForm.ShowModal;
 end;
 
 procedure TPlayersForm.Button1Click(Sender: TObject);
@@ -158,7 +155,7 @@ var
 begin
   pi:=Item.Data;
   if pi.Correct then
-     ListView1.Canvas.Font.Color:=TColor($008000)
+     ListView1.Canvas.Font.Color:=TColor($007000)
   else
      ListView1.Canvas.Font.Color:=TColor($0000A0);
 end;

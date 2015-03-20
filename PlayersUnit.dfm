@@ -117,6 +117,23 @@ object PlayersForm: TPlayersForm
     TabOrder = 4
     OnExit = edPathExit
   end
+  object btnAdd: TButton
+    Left = 8
+    Top = 392
+    Width = 75
+    Height = 25
+    Caption = 'Add'
+    TabOrder = 5
+    OnClick = btnAddClick
+  end
+  object btnRemove: TButton
+    Left = 89
+    Top = 392
+    Width = 75
+    Height = 25
+    Caption = 'Remove'
+    TabOrder = 6
+  end
   object OpenDialog: TOpenDialog
     Left = 568
     Top = 376
