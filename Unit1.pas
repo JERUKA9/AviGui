@@ -359,7 +359,8 @@ begin
         pi:=TPlayerInfo.Create;
         pi.Name:=Name;
         pi.Path:=path;
-        Players.Add(pi);
+        pi.New := true;
+        Players.Insert(1, pi);
       end;
       pi.InCombo:=IsCombo='1';
     end;

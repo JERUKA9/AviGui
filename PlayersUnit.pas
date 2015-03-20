@@ -118,7 +118,7 @@ begin
     pi.InCombo:=true;
     pi.New:=true;
     pi.Correct:=FileExists(pi.Path);
-    Players.Add(pi);
+    Players.Insert(1,pi);
     Item:=ListView1.Items.Insert(1);
     FillItem(Item, pi, false);
     Item.Checked:=true;
