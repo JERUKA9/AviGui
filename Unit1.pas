@@ -324,12 +324,14 @@ var
   Line,IsCombo,Name,Path: string;
   pi: TPlayerInfo;
   bFound: boolean;
+  newPos: integer;
 begin
   iniFile := TIniFile.Create(IniPath);
   try
     FFmpegDir:=iniFile.ReadString('FFmpeg', 'Dir', '');
     strings:=TStringList.Create;
     iniFile.ReadSection('Players',strings);
+    newPos:=1;
     for i:=0 to strings.Count-1 do
     begin
       Line:=iniFile.ReadString('Players', strings[i], '');
@@ -360,7 +362,8 @@ begin
         pi.Name:=Name;
         pi.Path:=path;
         pi.New := true;
-        Players.Insert(1, pi);
+        Players.Insert(newPos, pi);
+        inc(newPos);
       end;
       pi.InCombo:=IsCombo='1';
     end;
